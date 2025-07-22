@@ -47,7 +47,7 @@ const router = createRouter({
 
 // middleware check auth
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated'))
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else {
