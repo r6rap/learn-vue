@@ -8,18 +8,35 @@ let post = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
+const isAuthenticated = () => {
+    return localStorage.getItem('isAuthenticated') === 'true'
+}
+
+if (!isAuthenticated()) {
+    router.push('/login')
+}
+
 onMounted(() => {
+    // ambil item 'posts' di local storage
     const posts = JSON.parse(localStorage.getItem('posts')) || []
+
+    // mencari 'posts' yang idnya sesuai dengan parameter id di route
     post.value = posts.find(p => p.id === Number(route.params.id))
     loading.value = false
 })
 
 const deletePost = () => {
-    const posts = JSON.parse(localStorage.getItem('posts')) || []
-    const updated = posts.filter(p => p.id !== post.value.id)
-    localStorage.setItem('posts', JSON.stringify(updated))
-    router.push('/')
+  // Ambil semua post dari localStorage
+  const posts = JSON.parse(localStorage.getItem('posts')) || []
+
+  // Filter post yang bukan post saat ini
+  const updated = posts.filter(p => p.id !== post.value.id)
+
+  // Simpan ulang ke localStorage
+  localStorage.setItem('posts', JSON.stringify(updated))
+  router.push('/')
 }
+
 
 </script>
 

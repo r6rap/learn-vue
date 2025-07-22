@@ -28,6 +28,7 @@ const submitPost = async () => {
         body: post.value.body
     }
 
+    // unshift, menambahkan satu atau lebih elemen ke awal array yang sudah ada
     posts.unshift(newPost)
     localStorage.setItem('posts', JSON.stringify(posts))
 
