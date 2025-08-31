@@ -1,22 +1,39 @@
 <template>
-  <nav class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-blue-600">My Blog</h1>
-    <ul class="flex space-x-4 items-center">
+  <nav class="bg-black text-white font-mono border-b border-gray-700 px-4 sm:px-6 py-3 flex justify-between items-center">
+    <!-- Brand -->
+    <h1 class="text-lg sm:text-2xl font-bold text-green-400">
+      $ PostGo
+    </h1>
+
+    <!-- Menu -->
+    <ul class="flex space-x-3 sm:space-x-6 items-center">
       <li>
-        <router-link to="/" class="text-gray-700 hover:text-blue-600">Home</router-link>
+        <router-link
+          to="/"
+          class="text-gray-300 hover:text-cyan-400 transition"
+        >
+          > Home
+        </router-link>
       </li>
       <li>
-        <router-link to="/create/post" class="text-gray-700 hover:text-blue-600">Create Post</router-link>
+        <router-link
+          to="/create/post"
+          class="text-gray-300 hover:text-cyan-400 transition"
+        >
+          > Create Post
+        </router-link>
       </li>
       <li>
-        <button @click="handleLogout" class="text-red-500 hover:text-red-700 font-semibold">
-          Logout
+        <button
+          @click="handleLogout"
+          class="text-red-500 hover:text-red-400 font-semibold transition"
+        >
+          ! Logout
         </button>
       </li>
     </ul>
   </nav>
 </template>
-
 
 <script setup>
 import { useRouter } from 'vue-router'

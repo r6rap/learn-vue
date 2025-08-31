@@ -47,9 +47,20 @@ const router = createRouter({
 
 // middleware check auth
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
+  if (to.meta.requiresAuth) {
+    fetch('http://localhost:8080/postgo/check-auth', {
+      credentials: 'include'
+    })
+
+    .then(response => {
+      if (response.ok) {
+        next()
+      } else {
+        next('/login')
+      }
+    })
+
+    .catch(() => next('/login'))
   } else {
     next()
   }

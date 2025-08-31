@@ -1,28 +1,54 @@
 <template>
-  <div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-md">
-    <h1 class="text-2xl font-bold mb-4 text-center">Login</h1>
+  <div class="min-h-screen flex items-center justify-center bg-black text-white font-mono px-4">
+    <div class="w-full max-w-md border border-gray-700 rounded-md p-6 bg-black">
+      <!-- title -->
+      <h1 class="text-2xl font-bold mb-6 text-center text-green-400">
+        $ Login
+      </h1>
 
-    <form @submit.prevent="handleLogin" class="space-y-4">
-      <div>
-        <label class="block text-gray-700 font-semibold mb-1">Email</label>
-        <input v-model="users.email" type="email" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" placeholder="contoh@email.com" />
-      </div>
+      <!-- form -->
+      <form @submit.prevent="testLogin" class="space-y-4">
+        <!-- username -->
+        <div>
+          <label class="block mb-1 text-gray-300">> Username</label>
+          <input
+            v-model="apiData.username"
+            type="text"
+            class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded focus:outline-none focus:border-cyan-400"
+            placeholder="username"
+          />
+        </div>
 
-      <div>
-        <label class="block text-gray-700 font-semibold mb-1">Password</label>
-        <input v-model="users.password" type="password" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" placeholder="Masukkan password kamu" />
-      </div>
+        <!-- sassword -->
+        <div>
+          <label class="block mb-1 text-gray-300">> Password</label>
+          <input
+            v-model="apiData.password"
+            type="password"
+            class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded focus:outline-none focus:border-cyan-400"
+            placeholder="password"
+          />
+        </div>
 
-      <div>
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
-          Login
-        </button>
-      </div>
+        <!-- submit -->
+        <div>
+          <button
+            type="submit"
+            class="w-full bg-green-600 text-black font-bold py-2 px-4 rounded hover:bg-green-500 transition"
+          >
+            > Sign In
+          </button>
+        </div>
 
-      <p class="text-center text-sm text-gray-500">Belum punya akun?
-        <router-link to="/register" class="text-blue-600 hover:underline">Daftar di sini</router-link>
-      </p>
-    </form>
+        <!-- register -->
+        <p class="text-center text-sm text-gray-400">
+          Don't have an account?
+          <router-link to="/register" class="text-cyan-400 hover:underline">
+            Sign Up
+          </router-link>
+        </p>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -30,10 +56,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const users = ref({
-  email: '',
+const apiData = ref({
+  username: '',
   password: ''
 })
+
+console.log("login.vue")
 
 const router = useRouter()
 
@@ -42,33 +70,38 @@ const validateEmail = (email) => {
   return regex.test(email)
 }
 
-// Logic login akan kita buat nanti
-const handleLogin = () => {
-  if (!users.value) {
-    alert('column cant be empty')
+// logic login with api
+const testLogin = async () => {
+  if (!apiData.value.username || !apiData.value.password) {
+    alert('Semua field harus diisi')
     return
   }
 
-  if (!validateEmail(users.value.email)) {
-    alert('email not valid')
+  if (apiData.value.password.length < 8) {
+    alert('Password minimal 8 karakter')
     return
   }
 
-  if (users.value.password.length < 8) {
-    alert('password not valid')
-    return
+  try {
+      const res = await fetch('http://localhost:8080/postgo/login', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(apiData.value),
+        credentials: 'include' // send and save cookies httpOnly
+      })
+
+      if (!res.ok) {
+        throw new Error('Login gagal, periksa email dan password Anda')
+      }
+
+      alert('Login berhasil')
+      router.push('/')
+
+  } catch (error) {
+    console.error('Login error:', error)
+    alert(error.message || 'Terjadi kesalahan saat login')
   }
-
-  users.value = JSON.parse(localStorage.getItem('users')) || []
-
-  const found = users.value.find(u => u.email === users.value.email && u.password === users.value.password)
-
-  if (found) {
-    alert('login success')
-    router.push('/')
-  } else {
-    alert('email atau password salah')
-  }
-
 }
 </script>

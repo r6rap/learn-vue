@@ -1,18 +1,22 @@
 <template>
-  <div class="min-h-screen bg-gray-100 text-gray-900">
+  <div class="min-h-screen bg-black text-white font-mono flex flex-col">
+    <!-- Navbar -->
     <Navbar />
-    <main class="flex-1 container mx-auto px-4 py-6">
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 sm:px-6 py-6">
       <router-view />
     </main>
+
+    <!-- Footer -->
     <Footer />
   </div>
 </template>
 
 <script setup>
-  import Navbar from './components/Navbar.vue';
-  import Footer from './components/Footer.vue';
+import Navbar from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
 </script>
 
 <style>
-/* Kosongkan atau gunakan Tailwind sepenuhnya */
 </style>

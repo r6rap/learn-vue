@@ -11,6 +11,8 @@ const post = ref({
   body: ''
 })
 
+console.log("edit post")
+
 // fungsi yang akan dijalankan ketika component EditPost sudah dirender
 onMounted(() => {
   const posts = JSON.parse(localStorage.getItem('posts')) || []

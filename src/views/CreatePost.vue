@@ -3,62 +3,77 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const post = ref({
-    id: 1,
-    title: '',
-    body: ''
+    post_title: '',
+    post_body: ''
 })
 const loading = ref(false)
+console.log("create post")
 const router = useRouter()
 
-const submitPost = async () => {
-    if (!post.value.title || !post.value.body) {
-        alert("Semua kolom wajib diisi")
-        return
-    }
+async function createPost() {
+  try {
+    const res = await fetch('http://localhost:8080/postgo/create/post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(post.value),
+      credentials: 'include'
+    })
 
-    loading.value = true
+    const data = await res.json()
 
-    const posts = JSON.parse(localStorage.getItem('posts')) || []
-
-    const lastId = posts.length ? posts[0].id : 0
-
-    const newPost = {
-        id: lastId + 1,
-        title: post.value.title,
-        body: post.value.body
-    }
-
-    // unshift, menambahkan satu atau lebih elemen ke awal array yang sudah ada
-    posts.unshift(newPost)
-    localStorage.setItem('posts', JSON.stringify(posts))
-
+    console.log('Post created:', data)
     router.push('/')
+  } catch (error) {
+    console.error('Error creating post:', error)
+    alert('Failed to create post. Please try again.')
+  }
+  
 }
 
 </script>
 
 <template>
-  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-4">Buat Post Baru</h2>
-    
-    <form @submit.prevent="submitPost" class="space-y-4">
-      <div>
-        <label class="block font-medium text-gray-700">Judul</label>
-        <input v-model="post.title" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
-      </div>
+  <div class="min-h-screen flex items-center justify-center bg-black text-white font-mono px-4">
+    <div class="w-full max-w-xl border border-gray-700 rounded-md p-6 bg-black">
+      <!-- title -->
+      <h2 class="text-2xl font-bold mb-6 text-green-400 text-center">
+        $ Create Post
+      </h2>
 
-      <div>
-        <label class="block font-medium text-gray-700">Isi</label>
-        <textarea v-model="post.body" class="w-full border border-gray-300 rounded px-3 py-2 h-32"></textarea>
-      </div>
+      <!-- form -->
+      <form @submit.prevent="createPost" class="space-y-4">
+        <!-- title -->
+        <div>
+          <label class="block mb-1 text-gray-300">> Title</label>
+          <input
+            v-model="post.post_title"
+            type="text"
+            class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded focus:outline-none focus:border-cyan-400"
+            placeholder="Title of your post"
+          />
+        </div>
 
-      <button
-        type="submit"
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        :disabled="loading"
-      >
-        {{ loading ? 'Mengirim...' : 'Kirim Post' }}
-      </button>
-    </form>
+        <!-- body -->
+        <div>
+          <label class="block mb-1 text-gray-300">> Content</label>
+          <textarea
+            v-model="post.post_body"
+            class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded h-32 focus:outline-none focus:border-cyan-400"
+            placeholder="Write your post content here..."
+          ></textarea>
+        </div>
+
+        <!-- submit -->
+        <button
+          type="submit"
+          class="w-full bg-green-600 text-black font-bold py-2 px-4 rounded hover:bg-green-500 transition disabled:opacity-50"
+          :disabled="loading"
+        >
+          {{ loading ? '> ...sending' : '> Send Post' }}
+        </button>
+      </form>
+    </div>
   </div>
 </template>
