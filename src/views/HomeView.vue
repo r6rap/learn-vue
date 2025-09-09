@@ -16,12 +16,14 @@ const error = ref(null)
 console.log("home view")
 
 const handleHover = (post_id) => {
-  console.log(`hover post: ${post_id}`)
-  postStore.prefetchPost(post_id)
+  const id = String(post_id)
+
+  console.log(`hover post: ${id}`)
+  postStore.prefetchPost(id)
 }
 
-const handleMouseLeave = () => {
-  console.log('mouse leave post')
+const handleMouseLeave = (post_id) => {
+  console.log(`mouse leave post: ${post_id}`)
   postStore.cancelPrefetch()
 }
 
@@ -66,8 +68,6 @@ onMounted(async () => {
     await Promise.all([fetchUser(), postStore.fetchPosts()])
   } catch (error) {
     error.value = 'Error loading data'
-  } finally {
-    loading.value = false
   }
 })
 </script>
@@ -95,12 +95,17 @@ onMounted(async () => {
       <PostCard 
         v-for="post in posts"
         :key="post.post_id"
-        :id="post.post_id"
+        :post_id="post.post_id"
         :title="post.post_title"
         :body="post.post_body"
         @mouseenter="handleHover(post.post_id)"
         @mouseleave="handleMouseLeave(post.post_id)"
       />
+    </div>
+    <div class="mt-8 p-4 bg-gray-900 border border-gray-700 rounded text-xs">
+      <p class="text-gray-400 mb-2">Debug Info:</p>
+      <p>Posts loaded: {{ posts.length }}</p>
+      <p>Cached posts: {{ postCache.size }}</p>
     </div>
   </div>
 </template>

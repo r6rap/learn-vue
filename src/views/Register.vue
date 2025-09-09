@@ -12,7 +12,7 @@
         <div>
           <label class="block mb-1 text-gray-300">> Username</label>
           <input
-            v-model="formData.username"
+            v-model="formSignup.username"
             type="text"
             class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded focus:outline-none focus:border-cyan-400"
             placeholder="username"
@@ -23,7 +23,7 @@
         <div>
           <label class="block mb-1 text-gray-300">> Email</label>
           <input
-            v-model="formData.email"
+            v-model="formSignup.email"
             type="email"
             class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded focus:outline-none focus:border-cyan-400"
             placeholder="example@email.com"
@@ -34,7 +34,7 @@
         <div>
           <label class="block mb-1 text-gray-300">> Password</label>
           <input
-            v-model="formData.password"
+            v-model="formSignup.password"
             type="password"
             class="w-full px-3 py-2 bg-black text-white border border-gray-700 rounded focus:outline-none focus:border-cyan-400"
             placeholder="min 8 characters"

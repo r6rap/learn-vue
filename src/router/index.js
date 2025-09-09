@@ -13,16 +13,19 @@ const router = createRouter({
       path: '/',
       name: 'Home',
       component: HomeView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
+      meta: { hideLayout: true }
     },
     {
       path: '/register',
       name: 'Register',
-      component: Register
+      component: Register,
+      meta: { hideLayout: true }
     },
     {
       path: '/create/post',

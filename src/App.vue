@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-black text-white font-mono flex flex-col">
     <!-- Navbar -->
-    <Navbar />
+    <Navbar v-if="!$route.meta.hideLayout" />
 
     <!-- Main Content -->
     <main class="flex-1 container mx-auto px-4 sm:px-6 py-6">
@@ -9,7 +9,7 @@
     </main>
 
     <!-- Footer -->
-    <Footer />
+    <Footer v-if="!$route.meta.hideLayout" />
   </div>
 </template>
 

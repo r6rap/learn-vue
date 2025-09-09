@@ -1,15 +1,17 @@
 <script setup>
 import router from '@/router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { usePostStore } from '@/stores/posts';
 
-// hiraukan
+const postStore = usePostStore()
+
 const route = useRoute()
-const post = ref('')
-const loading = ref(true)
+const post = ref(null)
+const loading = computed(() => postStore.loading)
 const error = ref(null)
 
-// dummy comments (nanti ambil dari API)
+// dummy comments
 const comments = ref([
   { id: 1, user: "alice", body: "Nice post!" },
   { id: 2, user: "bob", body: "Setuju banget 👍" }
@@ -17,34 +19,27 @@ const comments = ref([
 
 const newComment = ref("")
 
-// hiraukan
 onMounted(async () => {
   try {
-    const res = await fetch(`http://localhost:8080/postgo/post/${route.params.id}`, {
-      method: 'GET',
-      credentials: 'include', // include cookies in the request
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (res.ok) {
-      const json = await res.json()
-      console.log('Full JSON response:', json)
-      console.log('json.data:', json.data)
-      
-      post.value = json.data
-      error.value = null
-    } else {
-      console.log('Failed to fetch post:', res.statusText)
-      post.value = null
-      error.value = 'Failed to load post'
+    if (postStore.isPostCached(route.params.id)) {
+      console.log(`prefetch data for post ${route.params.id}`)
+      const cachedPost = await postStore.getPost(route.params.id)
+      post.value = cachedPost
+      return
     }
+
+    console.log("fetch data from server")
+    const data = await postStore.getPost(route.params.id)
+
+    if (data) {
+      post.value = data
+    } else {
+      error.value = 'Post not found.'
+    }
+
   } catch (error) {
-    console.error('Error fetching post:', error)
-    error.value = 'Error loading post'
-  } finally {
-    loading.value = false
+    error.value = 'Failed to load post.'
+    console.error("fetch error detail post:", error)
   }
 })
 
@@ -57,6 +52,8 @@ const addComment = () => {
   })
   newComment.value = ""
 }
+
+console.log(Array.from(postStore.postCache))
 </script>
 
 <template>
