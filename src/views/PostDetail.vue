@@ -1,14 +1,11 @@
 <script setup>
-import router from '@/router';
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { usePostStore } from '@/stores/posts';
 
-const postStore = usePostStore()
-
+const postCache = ref(new Map())
 const route = useRoute()
 const post = ref(null)
-const loading = computed(() => postStore.loading)
+const loading = ref(false)
 const error = ref(null)
 
 // dummy comments
@@ -19,17 +16,62 @@ const comments = ref([
 
 const newComment = ref("")
 
+const isPostCached = (post_id) => postCache.value.has(String(post_id))
+
+async function fetchDetailPost(post_id) {
+        try {
+        const res = await fetch(`http://localhost:8080/postgo/post/${post_id}`, {
+            method: 'GET',
+            credentials: 'include', // include cookies in the request
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (res.ok) {
+            const postJson = await res.json()
+            console.log('Full JSON response:', postJson)
+            console.log('json.data:', postJson.data)
+
+            postCache.value.set(post_id, postJson.data)
+            return postJson.data
+        } else {
+            console.log('Failed to fetch post:', res.statusText)
+        }
+        } catch (error) {
+            console.log('Error fetching post:', error)
+            error.value = 'Error loading post'
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function getPost(post_id) {
+        const idStr = String(post_id)
+
+        // jika ada post di cache, gunakan post dari cache
+        if (postCache.value.has(idStr)) {
+            console.log(`Using cached post ${idStr}`)
+            // kembalikan post dari cache
+            return postCache.value.get(idStr)
+        }
+
+        // jika tidak ada post di cache, fetch detail post dari server
+        console.log(`Fetching post ${idStr}`)
+        return await fetchDetailPost(idStr)
+    }
+
 onMounted(async () => {
   try {
-    if (postStore.isPostCached(route.params.id)) {
+    if (isPostCached(route.params.id)) {
       console.log(`prefetch data for post ${route.params.id}`)
-      const cachedPost = await postStore.getPost(route.params.id)
+      const cachedPost = await getPost(route.params.id)
       post.value = cachedPost
       return
     }
 
     console.log("fetch data from server")
-    const data = await postStore.getPost(route.params.id)
+    const data = await getPost(route.params.id)
 
     if (data) {
       post.value = data
@@ -52,8 +94,6 @@ const addComment = () => {
   })
   newComment.value = ""
 }
-
-console.log(Array.from(postStore.postCache))
 </script>
 
 <template>

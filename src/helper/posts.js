@@ -7,42 +7,6 @@ export const usePostStore = defineStore('posts', () => {
     const loading = ref(false)
     const prefetchingId = ref(new Set()) // set, kumpulan data unik (tidak ada duplikat)
 
-    async function fetchPosts() {
-        
-        // jika post sudah ada di cache, gunakna post yang ada di cache
-        if (posts.value.length > 0) {
-            console.log('Using cached posts')
-            return
-        }
-
-        loading.value = true
-
-        // fetch posts from backend
-        try {
-            const res = await fetch('http://localhost:8080/postgo/posts', {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-
-        if (res.ok) {
-            const json = await res.json()
-            console.log('Fetched posts:', json.data.posts)
-            posts.value = json.data.posts
-        } else {
-            console.log('Failed to fetch posts:', res.statusText)
-            posts.value = []
-        }
-        } catch (error) {
-            console.error('Error fetching posts:', error)
-            posts.value = []
-        } finally {
-            loading.value = false
-        }
-    }
-
     async function fetchDetailPost(post_id) {
         try {
         const res = await fetch(`http://localhost:8080/postgo/post/${post_id}`, {
@@ -129,7 +93,6 @@ export const usePostStore = defineStore('posts', () => {
     postCache,
     loading,
     prefetchingId,
-    fetchPosts,
     fetchDetailPost,
     prefetchPost,
     getPost,
