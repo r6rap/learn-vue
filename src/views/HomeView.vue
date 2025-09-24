@@ -12,6 +12,34 @@ const error = ref(null)
 
 console.log("home view")
 
+async function fetchDetailPost(post_id) {
+        try {
+        const res = await fetch(`http://localhost:8080/postgo/post/${post_id}`, {
+            method: 'GET',
+            credentials: 'include', // include cookies in the request
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (res.ok) {
+            const postJson = await res.json()
+            console.log('Full JSON response:', postJson)
+            console.log('json.data:', postJson.data)
+
+            postCache.value.set(post_id, postJson.data)
+            return postJson.data
+        } else {
+            console.log('Failed to fetch post:', res.statusText)
+        }
+        } catch (error) {
+            console.log('Error fetching post:', error)
+            error.value = 'Error loading post'
+        } finally {
+            loading.value = false
+        }
+    }
+
 async function prefetchPost(post_id) {
         // jika post_id tidak valid, return
         if (!post_id) return
